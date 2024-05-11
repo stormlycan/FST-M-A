@@ -1,6 +1,7 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import env from 'dotenv'
+import cors from 'cors'
 import userRoutes from './routes/user.routes.js'
 import authRouter from './routes/auth.router.js';
 env.config();
@@ -15,7 +16,7 @@ mongoose.connect(process.env.MONGO_LINK).then(() => {
 });
 
 app.use(express.json())
-
+app.use(cors());
 app.listen(PORT, () => {
     console.log(`Server running at port ${PORT}`);
 });

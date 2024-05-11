@@ -12,6 +12,6 @@ export const signup = async (req, res, next) => {
             message: "User created succefully"
         })
     } catch (error) {
-        next(errorHandler(300, "somthin went wrong"));
+        next(errorHandler(300, error.message));
     }
 }
