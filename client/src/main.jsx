@@ -1,20 +1,20 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import {createBrowserRouter, RouterProvider} from 'react-router-dom'
-import { Provider } from 'react-redux'
-import App from './App.jsx'
-import './index.css'
-import Profile from './routes/Profile.jsx'
-import Signin from './routes/Signin.jsx'
-import Signup from './routes/Signup.jsx'
-import About from './routes/About.jsx'
-import Home from './routes/Home.jsx'
-import { store } from './redux/store.js'
-
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Provider } from "react-redux";
+import App from "./App.jsx";
+import "./index.css";
+import Profile from "./routes/Profile.jsx";
+import Signin from "./routes/Signin.jsx";
+import Signup from "./routes/Signup.jsx";
+import About from "./routes/About.jsx";
+import Home from "./routes/Home.jsx";
+import { persistor, store } from "./redux/store.js";
+import { PersistGate } from "redux-persist/integration/react";
 
 const router = createBrowserRouter([
   {
-    path:"/",
+    path: "/",
     element: <App />,
     children: [
       {
@@ -31,20 +31,22 @@ const router = createBrowserRouter([
       },
       {
         path: "/sign-in",
-        element:  <Signin />
+        element: <Signin />,
       },
       {
         path: "/profile",
-        element:  <Profile />
+        element: <Profile />,
       },
-    ]
-  }
+    ],
+  },
 ]);
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <RouterProvider router={router} >
-      <App />
-    </RouterProvider>
-  </Provider>,
-)
+    <PersistGate persistor={persistor} loading={null}>
+      <RouterProvider router={router}>
+        <App />
+      </RouterProvider>
+    </PersistGate>
+  </Provider>
+);
