@@ -1,10 +1,17 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInFailuser,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice";
 
 export default function Signin() {
   const [formData, setFormData] = useState({});
-  const [error, seterror] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handelChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -12,24 +19,26 @@ export default function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
-      seterror(false);
-      const res = await fetch('/api/auth/signin',{
-        method: 'POST',
+      dispatch(signInStart());
+      const res = await fetch("/api/auth/signin", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       });
       const data = await res.json();
-      setLoading(false);
+
       if (data.success === false) {
-        seterror(true);
+        dispatch(signInFailuser(data));
         return;
       }
-    } catch (err) {
-      setLoading(false);
-      seterror(true);
+
+      dispatch(signInSuccess(data));
+      navigate("/");
+
+    } catch (error) {
+      dispatch(signInFailuser(error));
     }
   };
   return (
@@ -50,8 +59,11 @@ export default function Signin() {
           className="bg-slate-100 p3 rounded-lg"
           onChange={handelChange}
         />
-        <button disabled={loading} className="bg-slate-700 text-white p3 rounded-lg uppercase hover:opacity-95 disabled:placeholder-opacity-80">
-          {loading ? 'Loading...': "Sign in"}
+        <button
+          disabled={loading}
+          className="bg-slate-700 text-white p3 rounded-lg uppercase hover:opacity-95 disabled:placeholder-opacity-80"
+        >
+          {loading ? "Loading..." : "Sign in"}
         </button>
       </form>
       <div className="flex gap-2 mt-5">
@@ -60,7 +72,7 @@ export default function Signin() {
           <span>Sign Up</span>
         </Link>
       </div>
-      <p className="text-red-500">{error && "Something went wrong!"}</p>
+      <p className="text-red-500">{error ? error.message || "Something went wrong!": ""}</p>
     </div>
   );
 }
